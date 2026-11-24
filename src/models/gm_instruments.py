@@ -239,10 +239,22 @@ def get_instrument_name(program: int, language: str = "zh") -> str:
     # 检查 YourMT3 扩展程序号
     if program in YOURMT3_EXTENDED_PROGRAMS:
         names = YOURMT3_EXTENDED_PROGRAMS[program]
-        return names[1] if language.startswith("zh") else names[0]
+        if language.startswith("zh"):
+            return names[1]
+        if language.startswith("vi"):
+            return {
+                100: "Giọng hát (Giai điệu chính)",
+                101: "Giọng hát (Hòa âm)",
+                128: "Bộ trống",
+            }[program]
+        return names[0]
 
     if program < 0 or program > 127:
-        return "未知乐器" if language.startswith("zh") else "Unknown"
+        if language.startswith("zh"):
+            return "未知乐器"
+        if language.startswith("vi"):
+            return "Nhạc cụ không rõ"
+        return "Unknown"
 
     inst = _PROGRAM_TO_INSTRUMENT.get(program)
     if inst is None:

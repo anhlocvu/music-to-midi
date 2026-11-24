@@ -155,3 +155,20 @@ def test_colab_web_ui_notebook_contract():
     assert "src.web_api.colab_server" in joined
     assert "src.model_profiles" in joined
     assert "if ENABLE_MUSCRIPTOR:" in joined
+    assert "https://github.com/anhlocvu/music-to-midi.git" in joined
+
+
+def test_colab_app_exposes_vietnamese_capabilities_and_project_labels(tmp_path):
+    app = create_colab_app(data_root=tmp_path / "data")
+    with TestClient(app) as client:
+        caps = client.get("/api/v1/capabilities")
+        assert caps.status_code == 200
+        payload = caps.json()
+        assert all("label_vi" in item and item["label_vi"] for item in payload["modes"])
+        assert all("label_vi" in item and item["label_vi"] for item in payload["muscriptor_models"])
+        assert all("label_vi" in item and item["label_vi"] for item in payload["muscriptor_instruments"])
+        assert all("label_vi" in item and item["label_vi"] for item in payload["tempo_modes"])
+
+        proj_caps = client.get("/api/v1/projects/capabilities")
+        assert proj_caps.status_code == 200
+        assert "vi_VN" in proj_caps.json()["labels"]

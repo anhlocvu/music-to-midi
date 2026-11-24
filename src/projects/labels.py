@@ -85,8 +85,55 @@ LABELS = {
         "portable_hint": "Projects save automatically. Export a project archive before leaving Space or Colab to continue elsewhere.",
         "processing_hint": "Processing; settings are locked. Stopping preserves completed steps.",
     },
+    "vi_VN": {
+        "title": "Dự án & xử lý hàng loạt",
+        "new": "Tạo dự án mới",
+        "open": "Mở dự án",
+        "export": "Xuất gói dự án",
+        "add": "Thêm bài hát",
+        "apply": "Áp dụng cài đặt hiện tại",
+        "run": "Chạy tiếp dự án",
+        "stop": "Dừng",
+        "result": "Mở kết quả bài hát",
+        "profile_load": "Nhập quy trình",
+        "profile_save": "Xuất quy trình",
+        "empty": "Thêm bài hát để lưu thành dự án. Chọn tệp hoặc model sẽ không tự bắt đầu xử lý.",
+        "saved": "Đã lưu cấu hình. Nhấn Chạy tiếp dự án để xử lý.",
+        "scope": "Áp dụng cài đặt cho",
+        "all": "Tất cả bài hát",
+        "selected": "Bài hát hiện tại",
+        "stems": "Các track & model chuyển MIDI sau tách nhạc",
+        "none": "Chỉ tách WAV",
+        "pending": "Đang chờ",
+        "running": "Đang xử lý",
+        "succeeded": "Hoàn tất",
+        "failed": "Thất bại",
+        "cancelled": "Đã dừng",
+        "interrupted": "Bị gián đoạn trước đó",
+        "cancelling": "Đang dừng; chờ lượt suy luận hiện tại kết thúc",
+        "name": "Tên dự án",
+        "mode": "Chế độ",
+        "route": "Model chuyển MIDI",
+        "files": "Tệp âm thanh",
+        "refresh": "Làm mới",
+        "import": "Nhập gói dự án",
+        "download": "Tải tệp",
+        "song": "Bài hát",
+        "progress": "Tiến độ",
+        "error": "Thao tác dự án thất bại",
+        "save": "Lưu cài đặt",
+        "save_mix": "Lưu cài đặt mixer",
+        "add_tracks": "Thêm track",
+        "portable_hint": "Dự án được tự động lưu. Hãy xuất gói dự án trước khi rời Space hoặc Colab để tiếp tục ở nơi khác.",
+        "processing_hint": "Đang xử lý; cài đặt tạm khóa. Nếu dừng, các bước đã xong vẫn được giữ lại.",
+    },
 }
 
 
 def labels(language: str = "zh_CN") -> dict[str, str]:
-    return dict(LABELS["en_US" if language.startswith("en") else "zh_CN"])
+    normalized = str(language or "").lower()
+    if normalized.startswith("vi"):
+        return dict(LABELS["vi_VN"])
+    if normalized.startswith("en"):
+        return dict(LABELS["en_US"])
+    return dict(LABELS["zh_CN"])

@@ -77,7 +77,7 @@ class InferenceOptions(BaseModel):
     midi_export: "MidiExportSettings | None" = None
     use_gpu: bool = True
     gpu_device: int = Field(default=0, ge=0)
-    language: Literal["zh_CN", "en_US"] = "zh_CN"
+    language: Literal["zh_CN", "en_US", "vi_VN"] = "zh_CN"
 
     @field_validator("processing_mode")
     @classmethod
@@ -181,7 +181,7 @@ class ManualMidiOptions(BaseModel):
     midi_export: "MidiExportSettings | None" = None
     use_gpu: bool = True
     gpu_device: int = Field(default=0, ge=0)
-    language: Literal["zh_CN", "en_US"] = "zh_CN"
+    language: Literal["zh_CN", "en_US", "vi_VN"] = "zh_CN"
 
     @field_validator("route")
     @classmethod

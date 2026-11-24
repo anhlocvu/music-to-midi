@@ -240,6 +240,7 @@ def _capabilities(
     # Colab read, so every platform presents identical wording.
     translator_zh = Translator("zh_CN")
     translator_en = Translator("en_US")
+    translator_vi = Translator("vi_VN")
     modes = []
     for mode_id, kind in mode_ids:
         if mode_id == ProcessingMode.SMART.value:
@@ -257,6 +258,7 @@ def _capabilities(
                 "id": mode_id,
                 "label_zh": translator_zh.t(f"main.mode.{mode_id}"),
                 "label_en": translator_en.t(f"main.mode.{mode_id}"),
+                "label_vi": translator_vi.t(f"main.mode.{mode_id}"),
                 "kind": kind,
                 **availability,
             }
@@ -338,6 +340,7 @@ def _capabilities(
                 "id": model.value,
                 "label_zh": translator_zh.t(f"main.engine.muscriptor_models.{model.value}"),
                 "label_en": translator_en.t(f"main.engine.muscriptor_models.{model.value}"),
+                "label_vi": translator_vi.t(f"main.engine.muscriptor_models.{model.value}"),
                 "available": profile_statuses[
                     "muscriptor" if model is MuscriptorModel.LARGE else f"muscriptor:{model.value}"
                 ].available,
@@ -352,6 +355,7 @@ def _capabilities(
                 "id": instrument,
                 "label_zh": muscriptor_instrument_label(instrument, "zh_CN"),
                 "label_en": muscriptor_instrument_label(instrument, "en_US"),
+                "label_vi": muscriptor_instrument_label(instrument, "vi_VN"),
             }
             for instrument in MUSCRIPTOR_INSTRUMENTS
         ],
@@ -362,6 +366,9 @@ def _capabilities(
                     f"main.engine.muscriptor_processing_chains.{chain.value}"
                 ),
                 "label_en": translator_en.t(
+                    f"main.engine.muscriptor_processing_chains.{chain.value}"
+                ),
+                "label_vi": translator_vi.t(
                     f"main.engine.muscriptor_processing_chains.{chain.value}"
                 ),
             }
@@ -383,6 +390,7 @@ def _capabilities(
                 "id": mode.value,
                 "label_zh": translator_zh.t(f"main.tempo.{mode.value}"),
                 "label_en": translator_en.t(f"main.tempo.{mode.value}"),
+                "label_vi": translator_vi.t(f"main.tempo.{mode.value}"),
             }
             for mode in TempoMode
         ],

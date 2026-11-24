@@ -33,7 +33,7 @@ class MusicProjects {
   }
   async init() {
     this.allLabels = (await this.request("/capabilities")).labels;
-    this.words = this.allLabels[state.language];
+    this.words = this.allLabels[state.language] || this.allLabels.en_US || this.allLabels.zh_CN;
     const w = this.words;
     this.root.innerHTML = `<h2>${escapeHtml(w.title)}</h2><p>${escapeHtml(w.empty)}</p>
       <input class="project-name" aria-label="${escapeHtml(w.name)}" value="${escapeHtml(w.title)}">
@@ -118,7 +118,7 @@ class MusicProjects {
     select.value = selected || "";
   }
   translate() {
-    this.words = this.allLabels[state.language];
+    this.words = this.allLabels[state.language] || this.allLabels.en_US || this.allLabels.zh_CN;
     const w = this.words;
     this.root.querySelector("h2").textContent = w.title;
     this.root.querySelector("p").textContent = w.empty;

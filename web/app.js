@@ -2,6 +2,7 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const LOCALE_FILES = {
+  vi_VN: "locales/vi_VN.json",
   zh_CN: "locales/zh_CN.json",
   en_US: "locales/en_US.json",
 };
@@ -35,7 +36,7 @@ function initialApiBase() {
 }
 
 const state = {
-  language: localStorage.getItem("musicToMidiLanguage") || "zh_CN",
+  language: localStorage.getItem("musicToMidiLanguage") || "vi_VN",
   messages: null,
   apiBase: "",
   frontendUrl: window.location.origin,
@@ -97,10 +98,17 @@ function isMuscriptorRoute(route) {
   return route === "muscriptor" || String(route || "").startsWith("muscriptor:");
 }
 
+function localizedLabel(item) {
+  if (!item) return "";
+  if (state.language === "zh_CN") return item.label_zh || item.label_en || "";
+  if (state.language === "vi_VN") return item.label_vi || item.label_en || "";
+  return item.label_en || item.label_zh || "";
+}
+
 function instrumentOptions(selected = []) {
   const selectedSet = new Set(selected);
   return (state.capabilities?.muscriptor_instruments || []).map((item) => (
-    `<option value="${escapeHtml(item.id)}" ${selectedSet.has(item.id) ? "selected" : ""}>${escapeHtml(state.language === "zh_CN" ? item.label_zh : item.label_en)}</option>`
+    `<option value="${escapeHtml(item.id)}" ${selectedSet.has(item.id) ? "selected" : ""}>${escapeHtml(localizedLabel(item))}</option>`
   )).join("");
 }
 
@@ -138,7 +146,7 @@ async function loadLocaleCatalogs() {
     }
   }
   state.messages = catalogs;
-  if (!state.messages[state.language]) state.language = "zh_CN";
+  if (!state.messages[state.language]) state.language = "vi_VN";
 }
 
 function t(key, variables = {}) {
@@ -364,7 +372,7 @@ function renderConnectionState() {
 
 function applyLanguage({ rerender = true } = {}) {
   if (typeof musicProjects !== "undefined" && musicProjects?.allLabels) musicProjects.translate();
-  document.documentElement.lang = state.language === "zh_CN" ? "zh-CN" : "en";
+  document.documentElement.lang = state.language === "zh_CN" ? "zh-CN" : state.language === "vi_VN" ? "vi" : "en";
   document.title = t("document.title");
   $$('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
   $$('[data-i18n-title]').forEach((node) => { node.title = t(node.dataset.i18nTitle); });
@@ -592,7 +600,7 @@ function populateControls() {
   caps.yourmt3_models.forEach((item) => option(ymt3, item.id, item.label, item));
   selectAvailableOption(ymt3, [selectedYmt3, "yptf_moe_multi_nops"]);
   const muscriptor = $("#muscriptorSelect"); const selectedMuscriptor = muscriptor.value; muscriptor.innerHTML = "";
-  caps.muscriptor_models.forEach((item) => option(muscriptor, item.id, state.language === "zh_CN" ? item.label_zh : item.label_en, item));
+  caps.muscriptor_models.forEach((item) => option(muscriptor, item.id, localizedLabel(item), item));
   selectAvailableOption(muscriptor, [selectedMuscriptor, "large"]);
   const instrumentSelect = $("#muscriptorInstrumentsSelect");
   const selectedInstruments = selectedValues(instrumentSelect);
@@ -603,7 +611,7 @@ function populateControls() {
   caps.muscriptor_processing_chains.forEach((item) => option(
     muscriptorProcessingChain,
     item.id,
-    state.language === "zh_CN" ? item.label_zh : item.label_en,
+    localizedLabel(item),
   ));
   muscriptorProcessingChain.value = [...muscriptorProcessingChain.options].some(
     (item) => item.value === selectedMuscriptorProcessingChain,
@@ -613,7 +621,7 @@ function populateControls() {
   const tempoMode = $("#tempoModeSelect");
   const selectedTempoMode = tempoMode.value || "fixed_auto";
   tempoMode.innerHTML = "";
-  caps.tempo_modes.forEach((item) => option(tempoMode, item.id, state.language === "zh_CN" ? item.label_zh : item.label_en));
+  caps.tempo_modes.forEach((item) => option(tempoMode, item.id, localizedLabel(item)));
   tempoMode.value = [...tempoMode.options].some((item) => item.value === selectedTempoMode) ? selectedTempoMode : "fixed_auto";
   const quantization = caps.midi_quantization;
   if (!quantization
@@ -648,7 +656,7 @@ function renderModes() {
     state.selectedMode = state.capabilities.modes.find((item) => item.available !== false)?.id || "";
   }
   state.capabilities.modes.forEach((mode, index) => {
-    const label = state.language === "zh_CN" ? mode.label_zh : mode.label_en;
+    const label = localizedLabel(mode);
     const option = document.createElement("option");
     option.value = mode.id;
     option.textContent = mode.available === false ? `${label} · ${t("model.unavailable")}` : label;
@@ -931,7 +939,7 @@ function metric(label, value) { return `<div class="metric-card"><span>${escapeH
 function modeLabel(modeId) {
   const mode = state.capabilities?.modes.find((item) => item.id === modeId);
   if (!mode) return modeId || "—";
-  return state.language === "zh_CN" ? mode.label_zh : mode.label_en;
+  return localizedLabel(mode);
 }
 function artifactLabel(kind) {
   const key = `result.artifact.${kind}`;
@@ -1007,7 +1015,10 @@ function attachSoundfontPreview(job, midiArtifact, container) {
       let audioUrl = "";
       const picker = new window.MidiSoundFontPicker({
         strings,
-        getSources: () => catalog.sources.map((source) => ({ ...source, name: source.labels[state.language] })),
+        getSources: () => catalog.sources.map((source) => ({
+          ...source,
+          name: source.labels?.[state.language] || source.labels?.en_US || source.labels?.zh_CN || source.name,
+        })),
         importFile: async (file) => {
           const form = new FormData(); form.append("file", file);
           return api(endpoint, { method: "POST", body: form });
@@ -1539,7 +1550,13 @@ function bindEvents() {
     }
     localStorage.setItem("musicToMidiApiBase", state.apiBase); await connectBackend();
   });
-  $("#languageButton").addEventListener("click", () => { state.language = state.language === "zh_CN" ? "en_US" : "zh_CN"; localStorage.setItem("musicToMidiLanguage", state.language); applyLanguage(); });
+  $("#languageButton").addEventListener("click", () => {
+    const order = ["vi_VN", "en_US", "zh_CN"];
+    const nextIndex = (order.indexOf(state.language) + 1) % order.length;
+    state.language = order[nextIndex];
+    localStorage.setItem("musicToMidiLanguage", state.language);
+    applyLanguage();
+  });
   $("#playAll").addEventListener("click", playTransport); $("#pauseAll").addEventListener("click", pauseTransport); $("#restartAll").addEventListener("click", () => { const wasPlaying = state.playing; stopTransport(); if (wasPlaying) playTransport(); });
   $("#zoomSlider").addEventListener("input", applyZoom); $("#fitTracks").addEventListener("click", () => { $("#zoomSlider").value = "1"; applyZoom(); });
   $("#alignTracks").addEventListener("click", () => { state.tracks.forEach((track) => { track.offset = 0; const row = trackRow(track); if (row) { $(".offset", row).value = "0"; $(".offset", row).nextElementSibling.value = "+0.00s"; } }); redrawWaveforms(); });
@@ -1568,7 +1585,7 @@ async function initialize() {
     document.documentElement.dataset.appState = "failed";
     const fatal = $("#fatalError");
     fatal.hidden = false;
-    const language = state.language === "en_US" ? "en_US" : "zh_CN";
+    const language = startupMessages[state.language] ? state.language : "vi_VN";
     fatal.textContent = `${startupMessages[language][stage]}: ${error.message}`;
     throw error;
   }

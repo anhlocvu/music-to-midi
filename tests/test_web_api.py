@@ -320,6 +320,7 @@ def test_capabilities_publish_all_current_modes_and_manual_routes(tmp_path):
                 "id": "clean_electric_guitar",
                 "label_zh": "干净的电吉他",
                 "label_en": "clean electric guitar",
+                "label_vi": "Guitar điện clean",
             }
             assert [item["id"] for item in payload["tempo_modes"]] == [
                 "adaptive",
@@ -342,10 +343,12 @@ def test_capabilities_publish_all_current_modes_and_manual_routes(tmp_path):
 
             translator_zh = Translator("zh_CN")
             translator_en = Translator("en_US")
+            translator_vi = Translator("vi_VN")
             for item in payload["modes"]:
                 mode_id = item["id"]
                 assert item["label_zh"] == translator_zh.t(f"main.mode.{mode_id}")
                 assert item["label_en"] == translator_en.t(f"main.mode.{mode_id}")
+                assert item["label_vi"] == translator_vi.t(f"main.mode.{mode_id}")
             for item in payload["yourmt3_models"]:
                 assert item["label"] == YOURMT3_MODELS[item["id"]]["ui_label"]
             assert [item["id"] for item in payload["muscriptor_models"]] == [
@@ -823,8 +826,8 @@ def test_static_client_locales_are_complete_and_ui_has_no_hardcoded_chinese():
         for path in (root / "web" / "locales").glob("*.json")
     }
 
-    assert catalogs.keys() == {"zh_CN", "en_US"}
-    assert catalogs["zh_CN"].keys() == catalogs["en_US"].keys()
+    assert catalogs.keys() == {"zh_CN", "en_US", "vi_VN"}
+    assert catalogs["zh_CN"].keys() == catalogs["en_US"].keys() == catalogs["vi_VN"].keys()
     assert not re.search(r"[\u3400-\u9fff]", source + markup)
 
     declared_keys = set(
@@ -835,6 +838,7 @@ def test_static_client_locales_are_complete_and_ui_has_no_hardcoded_chinese():
     )
     static_script_keys = set(re.findall(r'\bt\("([^"]+)"', source))
     assert declared_keys | static_script_keys <= catalogs["zh_CN"].keys()
+    assert not any(re.search(r"[\u3400-\u9fff]", value) for value in catalogs["vi_VN"].values())
 
 
 def test_static_client_matches_the_existing_desktop_app_visual_language():

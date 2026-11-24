@@ -129,6 +129,45 @@ MUSCRIPTOR_ZH_LABELS: dict[str, str] = {
 }
 
 
+MUSCRIPTOR_VI_LABELS: dict[str, str] = {
+    "acoustic_piano": "Piano acoustic",
+    "electric_piano": "Piano điện",
+    "chromatic_percussion": "Bộ gõ sắc thái",
+    "organ": "Organ",
+    "acoustic_guitar": "Guitar acoustic",
+    "clean_electric_guitar": "Guitar điện clean",
+    "distorted_electric_guitar": "Guitar điện distortion",
+    "acoustic_bass": "Bass acoustic",
+    "electric_bass": "Bass điện",
+    "violin": "Violin",
+    "viola": "Viola",
+    "cello": "Cello",
+    "contrabass": "Contrabass",
+    "orchestral_harp": "Đàn hạc giao hưởng",
+    "timpani": "Trống định âm (Timpani)",
+    "string_ensemble": "Dàn dây hợp tấu",
+    "synth_strings": "Dàn dây tổng hợp (Synth Strings)",
+    "voice": "Giọng hát (Vocal)",
+    "orchestra_hit": "Orchestra Hit",
+    "trumpet": "Kèn Trumpet",
+    "trombone": "Kèn Trombone",
+    "tuba": "Kèn Tuba",
+    "french_horn": "Kèn French Horn",
+    "brass_section": "Bộ kèn đồng (Brass Section)",
+    "soprano_and_alto_sax": "Saxophone Soprano & Alto",
+    "tenor_sax": "Saxophone Tenor",
+    "baritone_sax": "Saxophone Baritone",
+    "oboe": "Kèn Oboe",
+    "english_horn": "Kèn English Horn",
+    "bassoon": "Kèn Bassoon",
+    "clarinet": "Kèn Clarinet",
+    "flutes": "Sáo Flute",
+    "synth_lead": "Synth Lead",
+    "synth_pad": "Synth Pad",
+    "drums": "Bộ trống (Drums)",
+}
+
+
 _STEM_INSTRUMENT_HINTS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
     (
         ("guitar", "guitars"),
@@ -207,6 +246,9 @@ def muscriptor_instrument_label(name: str, language: str = "en_US") -> str:
     """Return a localized display label without changing the canonical id."""
 
     canonical = validate_muscriptor_instruments([name])[0]
-    if str(language).lower().startswith("zh"):
+    normalized = str(language).lower()
+    if normalized.startswith("zh"):
         return MUSCRIPTOR_ZH_LABELS[canonical]
+    if normalized.startswith("vi"):
+        return MUSCRIPTOR_VI_LABELS[canonical]
     return canonical.replace("_", " ")

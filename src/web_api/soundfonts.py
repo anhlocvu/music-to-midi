@@ -138,7 +138,7 @@ def install_soundfont_routes(app, manager, *, prefix="/api/v1/jobs", include_run
                                     if key[1]
                                     else get_instrument_name(key[0], language)
                                 )
-                                for language in ("zh_CN", "en_US")
+                                for language in ("zh_CN", "en_US", "vi_VN")
                             },
                         )
                         for key, name in sources.items()

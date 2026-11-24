@@ -25,7 +25,8 @@ class Translator:
     DEFAULT_LANGUAGE = "en_US"
     AVAILABLE_LANGUAGES = {
         "en_US": "English",
-        "zh_CN": "中文"
+        "zh_CN": "中文",
+        "vi_VN": "Tiếng Việt",
     }
 
     def __init__(self, language: str = "zh_CN"):

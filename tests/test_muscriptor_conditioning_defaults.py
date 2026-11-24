@@ -64,7 +64,7 @@ def test_space_and_colab_do_not_infer_hard_conditions_from_filenames():
 def test_all_supported_catalogs_explain_conditioning_without_filename_promises():
     from src.i18n.translator import Translator
 
-    assert set(Translator.AVAILABLE_LANGUAGES) == {"zh_CN", "en_US"}
+    assert set(Translator.AVAILABLE_LANGUAGES) == {"zh_CN", "en_US", "vi_VN"}
     for language in Translator.AVAILABLE_LANGUAGES:
         desktop = json.loads(Path(f"src/i18n/{language}.json").read_text(encoding="utf-8"))
         web = json.loads(Path(f"web/locales/{language}.json").read_text(encoding="utf-8"))
